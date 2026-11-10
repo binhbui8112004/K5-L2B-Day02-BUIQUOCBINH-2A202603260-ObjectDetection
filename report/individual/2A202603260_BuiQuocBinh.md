@@ -36,7 +36,7 @@ Chi tiết xem tại [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
   - Tinh chỉnh lại độ bám sát (tightness) của các bounding box xe buýt nối toa (`drive_008.jpg`, `drive_012.jpg`, `drive_029.jpg`, `drive_041.jpg`) và xe tải chở hàng quá khổ (`drive_042.jpg`) để box ôm sát thân xe thực tế, không lấy thừa bóng đổ dưới mặt đường.
   - Chuẩn hóa lại nhãn phân lớp giữa `van` (`3`) và `car` (`0`) ở các ngã tư đông xe (`drive_019.jpg`, `drive_024.jpg`, `drive_027.jpg`, `drive_050.jpg`).
   - Loại bỏ việc gán nhầm xe ba gác/xe máy có mái che ở `drive_012.jpg`, `drive_024.jpg`, `drive_035.jpg`.
-- **Commit khóa nhãn ban đầu**: *(Điền mã hash commit sau khi chạy `git commit` ở CP4)*
+- **Commit khóa nhãn ban đầu**: `84a3d0c`
 
 ## 4. Gold QC và rework
 
