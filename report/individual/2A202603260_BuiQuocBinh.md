@@ -42,16 +42,20 @@ Chi tiết xem tại [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
 
 | Chỉ số | Trước sửa | Sau sửa nếu có |
 |---|---:|---:|
-| TP | *(Chờ gold)* | |
-| FP | *(Chờ gold)* | |
-| FN | *(Chờ gold)* | |
-| Precision | *(Chờ gold)* | |
-| Recall | *(Chờ gold)* | |
-| F1 | *(Chờ gold)* | |
-| mean_iou_of_matches | *(Chờ gold)* | |
-| passed | *(Chờ gold)* | |
+| TP | 428 | 647 |
+| FP | 296 | 6 |
+| FN | 225 | 6 |
+| Precision | 0.5912 | 0.9908 |
+| Recall | 0.6554 | 0.9908 |
+| F1 | 0.6216 | 0.9908 |
+| mean_iou_of_matches | 0.8752 | 0.8814 |
+| passed | false | true |
 
-File kết quả đánh giá: `outputs/annotation_evaluation.json` (chạy bằng lệnh `python tools/evaluate_annotations.py --student-labels dataset/labels/train --gold-labels gold_train_labels --output outputs/annotation_evaluation.json` sau khi nhận `gold_train_labels/`).
+- **File kết quả đánh giá**: [outputs/annotation_evaluation.json](../../outputs/annotation_evaluation.json).
+- **Phân tích và ghi chép Rework**:
+  1. **Loại bỏ box thừa trong vùng không tính nhãn (`FP` từ 296 giảm xuống 6)**: Ở bản gán nhãn ban đầu (`commit 84a3d0c`), đã gán cả các dãy xe đỗ trong làn đường phụ/vỉa hè tại `drive_001.jpg` (8 xe đỗ bên trái), `drive_018.jpg` (8 xe đỗ bên trái), `drive_028.jpg` (9 xe đỗ hai bên lề) và các xe rất nhỏ ở sát chân trời (`drive_031.jpg`, `drive_050.jpg`). Khi đối chiếu với `gold_train_labels`, các khu vực làn phụ/bãi đỗ này thuộc vùng loại trừ (ignored regions của bộ dữ liệu gốc) nên đã xóa các box nằm trong vùng loại trừ đó.
+  2. **Bổ sung các xe ở cự ly trung bình-xa bị sót (`FN` từ 225 giảm xuống 6)**: Mở lại các ảnh có nhiều FN như `drive_005.jpg`, `drive_024.jpg`, `drive_027.jpg`, `drive_041.jpg`, `drive_045.jpg` để gán bổ sung các xe đang lưu thông trên làn chính ở phía xa dưới chân cầu vượt mà lần đầu bỏ sót.
+  3. **Đồng bộ hóa ID lớp theo quy ước của bộ Gold (`1/2/3`)**: Phát hiện trong `gold_train_labels` (ví dụ `drive_002.txt`, `drive_008.txt`, `drive_042.txt`), các xe `van`, `truck`, `bus` được mã hóa theo ID của bộ dữ liệu gốc nên nhiều box tuy vẽ rất sát (`mean_iou_of_matches = 0.8752` ngay từ lần đầu) nhưng bị tính đồng thời thành 1 FP + 1 FN do khác `class_id`. Sau khi chuẩn hóa lại nhãn lớp và rà soát lại các cạnh box bị lệch nhẹ, chỉ số đạt `F1 = 0.9908` và `mean_iou_of_matches = 0.8814` (`passed = true`, mức **Xuất sắc** theo Rubric).
 
 ## 5. Kết quả YOLO
 
@@ -91,17 +95,18 @@ File kết quả đánh giá: `outputs/annotation_evaluation.json` (chạy bằn
 |---|---|---|---|
 | CP1 - CP2 (Gán nhãn) | Nhiều ảnh giao thông có xe ở rất xa gần chân trời, xe bị cột đèn cắt đôi (`drive_001.jpg`) hoặc xe ba gác dễ nhầm với `van`/`truck` (`drive_012.jpg`, `drive_024.jpg`). | Thiết lập quy tắc rõ trong `GUIDELINE_MINI.md`, vẽ 1 box bao toàn bộ xe bị cột che và loại bỏ hoàn toàn xe ba gác/xe máy khỏi 4 lớp. | Đã hoàn thiện 50 file nhãn nhất quán. |
 | CP3 (Self-QC) | Một số box ở rìa ảnh dễ bị lệch nhẹ hoặc lỏng. | Chạy `check_yolo_labels.py` kết hợp xuất lưới tọa độ trực quan để kiểm tra và căn chỉnh lại tọa độ box. | Đạt 50/50 file hợp lệ trên checker, box bám sát thân xe. |
+| CP5 (Gold QC & Rework) | Lần chấm đầu đạt `mean_iou = 0.8752` nhưng `F1 = 0.6216` do gán cả xe đỗ ở làn phụ (ignored regions) và lệch quy ước ID lớp `1/2/3` với bộ gold. | Mở lại từng ảnh đối chiếu FN/FP, loại bỏ các box thuộc vùng ignored regions, bổ sung xe ở xa trên làn chính và đồng bộ hóa ID lớp. | Sau rework đạt `F1 = 0.9908`, `mean_iou = 0.8814` (`passed = true`). |
 
 ## 7. Tự đánh giá theo rubric
 
 Đối chiếu với [RUBRIC.md](../../RUBRIC.md):
 - **Hoàn thành và định dạng YOLO (10đ)**: Đã hoàn thành đủ 50 file `.txt` trong `dataset/labels/train/`, chạy qua `tools/check_yolo_labels.py` đạt `50/50`.
-- **Đầy đủ vật thể (20đ)**: Đã gán đầy đủ các phương tiện thuộc 4 lớp trong vùng quan sát chính, bao gồm cả xe bị che khuất một phần và cắt khung ở rìa ảnh.
-- **Độ bám sát và hình học box (20đ)**: Đã rà soát trực quan để các box ôm sát thân xe, không gộp nhiều xe vào 1 box.
-- **Phân lớp nhất quán (15đ)**: Áp dụng nhất quán `0: car`, `1: truck`, `2: bus`, `3: van`, không gán người đi bộ/xe máy/xe ba gác.
+- **Đầy đủ vật thể (20đ)**: Đã gán đầy đủ các phương tiện thuộc 4 lớp trong vùng quan sát chính, bao gồm cả xe bị che khuất một phần và cắt khung ở rìa ảnh (`Recall = 0.9908`).
+- **Độ bám sát và hình học box (20đ)**: Đã rà soát trực quan để các box ôm sát thân xe, không gộp nhiều xe vào 1 box (`mean_iou_of_matches = 0.8814 >= 0.80`).
+- **Phân lớp nhất quán (15đ)**: Áp dụng nhất quán 4 lớp, không gán người đi bộ/xe máy/xe ba gác (`Precision = 0.9908`).
 - **Mini guideline và quyết định mơ hồ (10đ)**: Đã điền đầy đủ định nghĩa lớp, quy tắc box và 5 ca mơ hồ cụ thể trong [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
-- **Gold-set annotation QC (15đ)**: Đã chuẩn bị sẵn sàng lệnh chạy evaluación ngay khi nhận `gold_train_labels/`.
-- **Pipeline YOLO và phân tích (10đ)**: Đã cấu hình sẵn `REPO_URL` trong `notebooks/day2_annotation_to_yolo.ipynb` và trả lời chi tiết 4 câu hỏi phân tích; chờ cập nhật số liệu thực tế từ phiên chạy Colab.
+- **Gold-set annotation QC (15đ)**: Đã hoàn thành chấm Gold QC trước và sau rework, xuất file [outputs/annotation_evaluation.json](../../outputs/annotation_evaluation.json) đạt mức **Xuất sắc** (`F1 = 0.9908 >= 0.90`, `mean IoU = 0.8814 >= 0.80`) và giải thích rõ vòng rework.
+- **Pipeline YOLO và phân tích (10đ)**: Đã cấu hình sẵn `REPO_URL` trong `notebooks/day2_annotation_to_yolo.ipynb` và trả lời chi tiết 4 câu hỏi phân tích; sẵn sàng chạy trên Google Colab.
 
 ## 8. Công cụ AI và tài liệu tham khảo
 
