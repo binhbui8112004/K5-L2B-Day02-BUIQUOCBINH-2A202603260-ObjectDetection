@@ -4,10 +4,10 @@
 
 - Họ tên: Bùi Quốc Bình
 - MSSV: 2A202603260
-- Email: *(Điền email của bạn)*
+- Email: binhbui8112004@gmail.com
 - Lớp: K5-L2B
 - Link repo bài làm: https://github.com/binhbui8112004/K5-L2B-Day02-BUIQUOCBINH-2A202603260-ObjectDetection
-- Link Colab đã chạy: *(Dán link Google Colab sau khi chạy notebook)*
+- Link Colab đã chạy: 
 
 ## 2. Schema và mini guideline
 
