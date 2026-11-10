@@ -7,7 +7,7 @@
 - Email: binhbui8112004@gmail.com
 - Lớp: K5-L2B
 - Link repo bài làm: https://github.com/binhbui8112004/K5-L2B-Day02-BUIQUOCBINH-2A202603260-ObjectDetection
-- Link Colab đã chạy: 
+- Link Colab đã chạy: https://colab.research.google.com/github/binhbui8112004/K5-L2B-Day02-BUIQUOCBINH-2A202603260-ObjectDetection/blob/main/notebooks/day2_annotation_to_yolo.ipynb#scrollTo=6f78b880
 
 ## 2. Schema và mini guideline
 
@@ -65,17 +65,20 @@ Chi tiết xem tại [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
 
 | Chỉ số trên 10 ảnh eval | Giá trị |
 |---|---:|
-| Precision | *(Điền từ `model_eval_metrics.json`)* |
-| Recall | *(Điền từ `model_eval_metrics.json`)* |
-| mAP50 | *(Điền từ `model_eval_metrics.json`)* |
-| mAP50–95 | *(Điền từ `model_eval_metrics.json`)* |
+| Precision | 0.9861 |
+| Recall | 0.7219 |
+| mAP50 | 0.8827 |
+| mAP50–95 | 0.6046 |
 
 - **Đường dẫn thư mục kết quả đánh giá và dự đoán**:
-  - Ảnh dự đoán trên 10 ảnh eval: `assets/eval_predictions/visuals/` (ví dụ: `assets/eval_predictions/visuals/drive_051.jpg`, `assets/eval_predictions/visuals/drive_058.jpg`).
-  - Log huấn luyện và biểu đồ đánh giá: `assets/yolo26_runs/vehicle_annotation/results.csv`, `assets/yolo26_runs/vehicle_eval/confusion_matrix.png`, `assets/yolo26_runs/vehicle_eval/BoxPR_curve.png`.
+  - Ảnh dự đoán trên 10 ảnh eval (`assets/eval_predictions/visuals/`):
+    - [drive_051.jpg](assets/eval_predictions/visuals/drive_051.jpg), [drive_052.jpg](assets/eval_predictions/visuals/drive_052.jpg), [drive_053.jpg](assets/eval_predictions/visuals/drive_053.jpg), [drive_054.jpg](assets/eval_predictions/visuals/drive_054.jpg), [drive_055.jpg](assets/eval_predictions/visuals/drive_055.jpg), [drive_056.jpg](assets/eval_predictions/visuals/drive_056.jpg), [drive_057.jpg](assets/eval_predictions/visuals/drive_057.jpg), [drive_058.jpg](assets/eval_predictions/visuals/drive_058.jpg), [drive_059.jpg](assets/eval_predictions/visuals/drive_059.jpg), [drive_060.jpg](assets/eval_predictions/visuals/drive_060.jpg).
+  - Log huấn luyện và biểu đồ đánh giá (`assets/yolo26_runs/`):
+    - Log theo epoch: [assets/yolo26_runs/vehicle_annotation/results.csv](assets/yolo26_runs/vehicle_annotation/results.csv), [assets/yolo26_runs/vehicle_annotation/results.png](assets/yolo26_runs/vehicle_annotation/results.png).
+    - Biểu đồ đánh giá trên tập eval: [assets/yolo26_runs/vehicle_eval/confusion_matrix.png](assets/yolo26_runs/vehicle_eval/confusion_matrix.png), [assets/yolo26_runs/vehicle_eval/confusion_matrix_normalized.png](assets/yolo26_runs/vehicle_eval/confusion_matrix_normalized.png), [assets/yolo26_runs/vehicle_eval/BoxPR_curve.png](assets/yolo26_runs/vehicle_eval/BoxPR_curve.png), [assets/yolo26_runs/vehicle_eval/BoxF1_curve.png](assets/yolo26_runs/vehicle_eval/BoxF1_curve.png), [assets/yolo26_runs/vehicle_eval/val_batch0_pred.jpg](assets/yolo26_runs/vehicle_eval/val_batch0_pred.jpg).
 - **Phân tích trực quan trên ảnh cụ thể**:
-  - Trên `drive_055.jpg` và `drive_054.jpg`, các xe con (`car`) ở cự ly gần và trung bình tách biệt rõ với nền đường nên model phát hiện chính xác với độ tự tin cao và box bám sát.
-  - Trên `drive_058.jpg` và `drive_056.jpg`, ở khu vực xe xếp hàng dày đặc phía xa (`y < 0.35`), một số xe kích thước rất nhỏ hoặc bị che khuất một phần có nguy cơ bị bỏ sót (FN) hoặc nhầm lớp giữa `bus`/`van`/`truck`.
+  - Trên [drive_054.jpg](assets/eval_predictions/visuals/drive_054.jpg) và [drive_055.jpg](assets/eval_predictions/visuals/drive_055.jpg), các xe con (`car`) ở cự ly gần và trung bình tách biệt rõ với nền đường nên model phát hiện chính xác với độ tự tin cao (`0.84 - 0.94`) và box bám sát thân xe.
+  - Trên [drive_058.jpg](assets/eval_predictions/visuals/drive_058.jpg) và [drive_056.jpg](assets/eval_predictions/visuals/drive_056.jpg), ở khu vực xe xếp hàng dày đặc phía xa (`y < 0.20`), một số xe kích thước rất nhỏ hoặc bị che khuất một phần có độ tự tin thấp hơn hoặc bị bỏ sót (FN), làm Recall tổng thể ở mức `0.7219` trong khi Precision đạt `0.9861`.
 
 ### Trả lời bốn câu hỏi cuối notebook:
 
@@ -96,6 +99,7 @@ Chi tiết xem tại [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
 | CP1 - CP2 (Gán nhãn) | Nhiều ảnh giao thông có xe ở rất xa gần chân trời, xe bị cột đèn cắt đôi (`drive_001.jpg`) hoặc xe ba gác dễ nhầm với `van`/`truck` (`drive_012.jpg`, `drive_024.jpg`). | Thiết lập quy tắc rõ trong `GUIDELINE_MINI.md`, vẽ 1 box bao toàn bộ xe bị cột che và loại bỏ hoàn toàn xe ba gác/xe máy khỏi 4 lớp. | Đã hoàn thiện 50 file nhãn nhất quán. |
 | CP3 (Self-QC) | Một số box ở rìa ảnh dễ bị lệch nhẹ hoặc lỏng. | Chạy `check_yolo_labels.py` kết hợp xuất lưới tọa độ trực quan để kiểm tra và căn chỉnh lại tọa độ box. | Đạt 50/50 file hợp lệ trên checker, box bám sát thân xe. |
 | CP5 (Gold QC & Rework) | Lần chấm đầu đạt `mean_iou = 0.8752` nhưng `F1 = 0.6216` do gán cả xe đỗ ở làn phụ (ignored regions) và lệch quy ước ID lớp `1/2/3` với bộ gold. | Mở lại từng ảnh đối chiếu FN/FP, loại bỏ các box thuộc vùng ignored regions, bổ sung xe ở xa trên làn chính và đồng bộ hóa ID lớp. | Sau rework đạt `F1 = 0.9908`, `mean_iou = 0.8814` (`passed = true`). |
+| CP6 (YOLO26 & Eval) | Các phương tiện ở rất xa (`y < 0.20`) trong `drive_056.jpg`, `drive_058.jpg` và sự mất cân bằng số lượng mẫu giữa lớp `car` với `van`/`truck`/`bus` làm giảm Recall trên các lớp ít mẫu. | Huấn luyện với bộ nhãn sau rework (`F1 = 0.9908`), đánh giá trên 10 ảnh `eval` và trích xuất trực quan 10 ảnh dự đoán cùng confusion matrix, PR curve vào `report/individual/assets/`. | Đạt `Precision = 0.9861`, `Recall = 0.7219`, `mAP50 = 0.8827`, `mAP50–95 = 0.6046`; hoàn thiện đầy đủ toàn bộ assets và câu hỏi phân tích. |
 
 ## 7. Tự đánh giá theo rubric
 
@@ -106,7 +110,7 @@ Chi tiết xem tại [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
 - **Phân lớp nhất quán (15đ)**: Áp dụng nhất quán 4 lớp, không gán người đi bộ/xe máy/xe ba gác (`Precision = 0.9908`).
 - **Mini guideline và quyết định mơ hồ (10đ)**: Đã điền đầy đủ định nghĩa lớp, quy tắc box và 5 ca mơ hồ cụ thể trong [GUIDELINE_MINI.md](../../GUIDELINE_MINI.md).
 - **Gold-set annotation QC (15đ)**: Đã hoàn thành chấm Gold QC trước và sau rework, xuất file [outputs/annotation_evaluation.json](../../outputs/annotation_evaluation.json) đạt mức **Xuất sắc** (`F1 = 0.9908 >= 0.90`, `mean IoU = 0.8814 >= 0.80`) và giải thích rõ vòng rework.
-- **Pipeline YOLO và phân tích (10đ)**: Đã cấu hình sẵn `REPO_URL` trong `notebooks/day2_annotation_to_yolo.ipynb` và trả lời chi tiết 4 câu hỏi phân tích; sẵn sàng chạy trên Google Colab.
+- **Pipeline YOLO và phân tích (10đ)**: Đã chạy hoàn chỉnh pipeline huấn luyện và đánh giá YOLO26 trên 10 ảnh `eval` (`Precision = 0.9861`, `Recall = 0.7219`, `mAP50 = 0.8827`, `mAP50–95 = 0.6046`), lưu đầy đủ 2 thư mục `assets/eval_predictions/` và `assets/yolo26_runs/`, đồng thời trả lời chi tiết 4 câu hỏi phân tích.
 
 ## 8. Công cụ AI và tài liệu tham khảo
 
